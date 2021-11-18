@@ -1,27 +1,49 @@
 <template>
   <div id="app">
+
     <div class="container text-center">
       <div class="input-group justify-content-center py-5">
-        <input type="text" class="w-25" v-model="query" @keyup.enter="serverCall('/search/movie', query, 'movies')" placeholder="Search..."/> 
-        <button class="btn btn-outline-secondary" type="button" @click="serverCall('/search/movie', query, 'movies')">Cerca!</button> 
+        <!-- <input type="text" class="w-25" v-model="query" @keyup.enter="serverCall('movie', query, 'movies')" placeholder="Search..."/> 
+        <button class="btn btn-outline-secondary" type="button" @click="serverCall('movie', query, 'movies')">Cerca!</button>  -->
+
+        <input type="text" class="w-25" v-model="query" @keyup.enter="doubleServerCall('movie', 'tv', query, 'movies', 'series')" placeholder="Search..."/> 
+        <button class="btn btn-outline-secondary" type="button" @click="doubleServerCall('movie', 'tv', query, 'movies', 'series')">Cerca!</button> 
       </div>
 
       <ul class="list-unstyled">
+
         <li v-for="movie in movies" :key="movie.id">
           <h5>{{ movie.title }}</h5>
+
           <ul class="list-unstyled">
             <li>Titolo orginale: {{ movie.original_title }}</li>
-            <li class="d-inline-block"><img alt="language's logo" :src="getLanguageFlag[movie.original_language] ? require('./assets/img/' + getLanguageMap[movie.original_language]) : require('./assets/img/default.png')" class="w-15"></li>
+            <li class="d-inline-block"><img :src="getLangFlag(movie.original_language)" alt="language's flag" class="w-15"></li>            
             <li>Voto: {{ movie.vote_average }}</li>
           </ul>
         </li>
+
+      </ul>
+      
+      <h1 style="color: red;">SERIE TV</h1>
+      <ul class="list-unstyled">
+
+        <li v-for="serie in series" :key="serie.id">
+          <h5>{{ serie.name }}</h5>
+
+          <ul class="list-unstyled">
+            <li>Titolo orginale: {{ serie.original_name }}</li>
+            <li class="d-inline-block"><img :src="getLangFlag(serie.original_language)" alt="language's flag" class="w-15"></li>
+             <li>Voto: {{ serie.vote_average }}</li> 
+          </ul>
+        </li>
+
       </ul>
     </div>
+
   </div>
 </template>
 
 <script>
-//import HelloWorld from './components/HelloWorld.vue'
 import axios from "axios";
 
 export default {
@@ -30,17 +52,28 @@ export default {
     return {
       apiKey: "bdb91d3c68495961f770560622014e12",
       apiUrl: "https://api.themoviedb.org/3",
-      query: "ciao",
+      query: "",
       movies: [],
       series: [],
-      flags: ["en", "it", "fr", "es", "de"]
+      flags: {
+        en: "en.png",
+        it: "it.png",
+        fr: "fr.png",
+        es: "es.png"
+      }
     };
   },
 
   methods: {
+    /**
+     * esegue la chiamata al server
+     * get: stringa che rappresenta la chiamata all'API
+     * query: stringa che contiene titolo o parte del titolo da ricercare
+     * type: stringa che rappresenta il tipo di elemento cercato (film o serie tv) e che coincide con il nome dell'array in cui verranno inseriti i risultati trovati
+     */
     serverCall(get, query, type) {
       axios
-        .get(this.apiUrl + get, {
+        .get(this.apiUrl + '/search/' + get, {
           params: {
             query: query,
             api_key: this.apiKey,
@@ -50,11 +83,27 @@ export default {
           this[type] = resp.data.results;
         });
     },
+
+    doubleServerCall(getM, getT, query, typeM, typeT){
+      this.serverCall(getM, query, typeM)
+      this.serverCall(getT, query, typeT)
+    },
+
+
+    getLangFlag(searchedLang){
+      if (!this.flags[searchedLang]){
+        console.log(!this.flags[searchedLang]);
+        //debugger
+        return require('./assets/img/default.png')
+      }
+
+      return require('./assets/img/' + this.flags[searchedLang])
+    }
   },
 
   computed: {
     /**
-     * restituisce un oggetto le cui chiavi sono le lingue dei film apparsi nella ricerca e i valori sono stringhe tipo "language.png"
+     * restituisce un oggetto le cui chiavi sono le lingue dei film apparsi nella ricerca e i valori sono stringhe tipo "en.png" o "it.pgn" ecc
      */
     getLanguageMap(){
       const languageMap = {}
@@ -68,25 +117,6 @@ export default {
       
       return languageMap
     },
-
-    /**
-     * restituisce un oggetto le chiavi sono le lingue dei film apparsi nella ricerca ed i valori sono booleani, a seconda che queste lingue siano presenti o meno nella lista delle bandiere a disposizione (array flags)
-     */
-    getLanguageFlag(){
-      //let thereIsFlag = false;
-      const objMap = {...(this.getLanguageMap)}
-      //console.log(objMap);
-
-      for (const key in objMap) {
-        if (this.flags.includes(key)) {
-          objMap[key] = true
-        } else {
-          objMap[key] = false
-        }
-      }
-      return objMap
-    }
-
   },
 
   /* mounted(){
