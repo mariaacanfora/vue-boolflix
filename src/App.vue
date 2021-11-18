@@ -19,6 +19,10 @@
             <li>Titolo orginale: {{ movie.original_title }}</li>
             <li class="d-inline-block"><img :src="getLangFlag(movie.original_language)" alt="language's flag" class="w-15"></li>            
             <li>Voto: {{ movie.vote_average }}</li>
+            <li><img :src="getPosterImg('/w342', movie.poster_path)" alt="movie's poster"></li>
+            <i class="fa fa-star" aria-hidden="true" v-for="(star, i) in getVote(movie.vote_average)" :key="i"></i>
+            <i class="fa fa-star-o" aria-hidden="true" v-for="(star, i) in (5 - getVote(movie.vote_average))" :key="'A' + i"></i>
+             
           </ul>
         </li>
 
@@ -33,7 +37,11 @@
           <ul class="list-unstyled">
             <li>Titolo orginale: {{ serie.original_name }}</li>
             <li class="d-inline-block"><img :src="getLangFlag(serie.original_language)" alt="language's flag" class="w-15"></li>
-             <li>Voto: {{ serie.vote_average }}</li> 
+            <li>Voto: {{ serie.vote_average }}</li> 
+            <li><img :src="getPosterImg('/w342', serie.poster_path)" alt="serie's poster"></li>
+            <i class="fa fa-star" aria-hidden="true" v-for="(star, i) in getVote(serie.vote_average)" :key="'B' + i"></i>
+            <i class="fa fa-star-o" aria-hidden="true" v-for="(star, i) in (5 - getVote(serie.vote_average))" :key="'C' + i"></i>
+             
           </ul>
         </li>
 
@@ -52,6 +60,7 @@ export default {
     return {
       apiKey: "bdb91d3c68495961f770560622014e12",
       apiUrl: "https://api.themoviedb.org/3",
+      imgUrl: "https://image.tmdb.org/t/p/",
       query: "",
       movies: [],
       series: [],
@@ -60,7 +69,8 @@ export default {
         it: "it.png",
         fr: "fr.png",
         es: "es.png"
-      }
+      },
+      totalStars: []
     };
   },
 
@@ -89,16 +99,26 @@ export default {
       this.serverCall(getT, query, typeT)
     },
 
-
     getLangFlag(searchedLang){
       if (!this.flags[searchedLang]){
-        console.log(!this.flags[searchedLang]);
-        //debugger
         return require('./assets/img/default.png')
       }
-
       return require('./assets/img/' + this.flags[searchedLang])
-    }
+    },
+
+    getPosterImg(dimension, path){
+      if(!path){
+        return "https://www.google.it/url?sa=i&url=http%3A%2F%2Fwww.theprintworks.com%2Ffilm%2Ftotal-dhamaal%2F%3Fdoing_wp_cron%3D1613302612.3904678821563720703125&psig=AOvVaw0BvrSTDMMnkcavTKMhZ3D_&ust=1637326474534000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCPCww8z6ofQCFQAAAAAdAAAAABAD"
+      }
+      return this.imgUrl + dimension + path
+    },
+
+    getVote(origVote){
+      const vote = origVote / 2;
+      const solidStars = Math.ceil(vote); 
+      return solidStars
+    },
+
   },
 
   computed: {
@@ -127,6 +147,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import "~font-awesome/css/font-awesome.min.css";
 @import "~bootstrap/scss/bootstrap";
 .w-15{
   width: 15%;
