@@ -1,0 +1,40 @@
+@import "~bootstrap/scss/bootstrap";
+@import "variables.scss";
+//@import "reset.scss";
+
+body{
+    background-color: grey;
+}
+
+main{
+    .poster-img{
+        object-fit: cover;
+        height: 100%;
+        width: 100%;
+    }
+
+    .card-container{
+        position: relative;
+        height: 660px;
+        
+        .overlay{
+            color: white;
+            background-color: black;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            gap: 5px;
+            transition: opacity .3s;
+        }
+
+        &:hover{
+            .overlay{
+                opacity: 1;
+            }
+        }
+    }
+
+}
