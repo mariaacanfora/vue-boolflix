@@ -6,6 +6,16 @@ body{
     background-color: grey;
 }
 
+input{
+    width: 15%;
+    height: 40px;
+}
+
+.btn:hover,
+.btn:active{
+    color: black !important;
+}
+
 main{
     .poster-img{
         object-fit: cover;
@@ -33,6 +43,10 @@ main{
         &:hover{
             .overlay{
                 opacity: 1;
+            }
+
+            img{
+                border: none;
             }
         }
     }

@@ -16,7 +16,7 @@ export default {
         }
     },
     
-    methods: {
+    methods: { 
         passQuery(queryString){
             this.query = queryString;
             this.$emit('search', this.query)

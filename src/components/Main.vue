@@ -1,10 +1,12 @@
 <template>
   <main>
     <div class="container py-5">
+        <h1 v-if="movies.length > 0">Film</h1>
         <div class="row row-cols-3">
             <Card v-for="movie in movies" :key="movie.id" :film="movie"></Card>           
         </div>
 
+        <h1 v-if="movies.length > 0" class="mt-5">Serie TV</h1>
         <div class="row row-cols-3">
             <Card v-for="serie in series" :key="serie.id" :film="serie"></Card>           
         </div>
@@ -23,16 +25,9 @@ export default {
     return {
       apiKey: "bdb91d3c68495961f770560622014e12",
       apiUrl: "https://api.themoviedb.org/3",
-      imgUrl: "https://image.tmdb.org/t/p/",
+
       movies: [],
-      series: [],
-      flags: {
-        en: "en.png",
-        it: "it.png",
-        fr: "fr.png",
-        es: "es.png",
-      },
-      totalStars: [],
+      series: [],      
     };
   },
   props: {

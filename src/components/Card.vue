@@ -1,13 +1,11 @@
 <template>
         <div class="col p-0 card-container text-center">
-            <img :src="getPosterImg" alt="film's poster"  class="poster-img"/>
+            <img :src="getPosterImg" alt="film's poster" :class="film.poster_path ? 'poster-img': 'poster-img border'"/>
             <div class="d-flex flex-column align-items-center overlay p-5">
-                <h1>{{film.title}}</h1> <!-- se è una serie serve film.name -->
-                <h3 v-if="film.title !== film.original_title">{{film.original_title}}</h3>
+                <h1>{{filmTitle}}</h1> 
+                <h3 v-if="filmOriginalTitle">{{filmOriginalTitle}}</h3>
                 <img :src="getLangFlag" alt="language's flag" class="w-15">
-                <span><i class="fa fa-star" aria-hidden="true" v-for="(star, i) in getVote" :key="i"></i>
-                <i class="fa fa-star-o" aria-hidden="true" v-for="(star, i) in (5 - getVote)" :key="'A' + i"></i></span>
-                <!-- <p class="text-center">{{ film.vote_average }}</p> -->
+                <span><i v-for="i in 5" :key="i" :class="i <= getVote ? 'fa fa-star' : 'fa fa-star-o'"></i></span>
                 <p class="text-center">{{film.overview}}</p>
             </div> 
         </div>
@@ -45,9 +43,9 @@ export default {
     getVote(){
       const origVote = this.film.vote_average
       const vote = origVote / 2;
-      const solidStars = Math.ceil(vote); 
-      return solidStars
-    },
+      const solidStars = Math.round(vote); 
+      return solidStars 
+    }, 
 
     getLangFlag(){
       const searchedLang = this.film.original_language;
@@ -56,6 +54,17 @@ export default {
       }
       return require('../assets/img/' + this.flags[searchedLang])
     },
+
+    filmTitle(){
+      return this.film.title ? this.film.title : this.film.name
+    },
+
+    filmOriginalTitle(){
+      const orginal = this.film.original_title ? this.film.original_title : this.film.original_name;
+
+      return orginal === this.filmTitle ? "" : orginal
+    }
+
   }
 };
 </script>
